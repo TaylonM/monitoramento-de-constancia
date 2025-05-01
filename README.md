@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor de Progresso</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,8 +48,16 @@
         form button:hover {
             background-color: #2E7D32;
         }
-        <button id="installButton" style="display: none;" onclick="installApp()">Instalar Aplicativo</button>
-
+        #installButton {
+            display: none;
+            background-color: #FFA000;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -59,16 +68,17 @@
     <main>
         <form id="formAtividade">
             <label for="distancia">Distância (km)</label>
-            <input type="number" id="distancia" placeholder="Ex.: 5.0" step="0.1" required aria-label="Distância percorrida em quilômetros">
+            <input type="number" id="distancia" placeholder="Ex.: 5.0" step="0.1" required>
             
             <label for="tempo">Tempo (min)</label>
-            <input type="number" id="tempo" placeholder="Ex.: 30" required aria-label="Tempo gasto na atividade em minutos">
+            <input type="number" id="tempo" placeholder="Ex.: 30" required>
             
             <label for="calorias">Calorias Queimadas</label>
-            <input type="number" id="calorias" placeholder="Ex.: 250" required aria-label="Quantidade de calorias queimadas">
+            <input type="number" id="calorias" placeholder="Ex.: 250" required>
             
             <button type="button" onclick="cadastrarAtividade()">Cadastrar</button>
         </form>
+        <button id="installButton" onclick="installApp()">Instalar Aplicativo</button>
         <div class="resumo">
             <h2>Resumo Acumulado</h2>
             <p id="resumoDistancia">Distância Total: 0 km</p>
@@ -77,88 +87,6 @@
             <p id="resumoDias">Dias desde o último reset: 0</p>
         </div>
     </main>
-    <script>
-        // Inicializa os valores acumulados
-        let distanciaTotal = parseFloat(localStorage.getItem("distanciaTotal")) || 0;
-        let tempoTotal = parseFloat(localStorage.getItem("tempoTotal")) || 0;
-        let caloriasTotal = parseFloat(localStorage.getItem("caloriasTotal")) || 0;
-        let dataInicial = localStorage.getItem("dataInicial") || new Date().getTime();
-
-        function calcularDias() {
-            const agora = new Date().getTime();
-            const diferenca = agora - parseInt(dataInicial);
-            return Math.floor(diferenca / (1000 * 60 * 60 * 24));
-        }
-
-        function verificarReset() {
-            const diasPassados = calcularDias();
-            if (diasPassados >= 30) {
-                distanciaTotal = 0;
-                tempoTotal = 0;
-                caloriasTotal = 0;
-                dataInicial = new Date().getTime();
-                
-                localStorage.setItem("distanciaTotal", distanciaTotal);
-                localStorage.setItem("tempoTotal", tempoTotal);
-                localStorage.setItem("caloriasTotal", caloriasTotal);
-                localStorage.setItem("dataInicial", dataInicial);
-            }
-        }
-
-        function atualizarResumo() {
-            verificarReset();
-            document.getElementById("resumoDistancia").innerText = `Distância Total: ${distanciaTotal.toFixed(1)} km`;
-            document.getElementById("resumoTempo").innerText = `Tempo Total: ${tempoTotal} minutos`;
-            document.getElementById("resumoCalorias").innerText = `Calorias Totais: ${caloriasTotal} kcal`;
-            document.getElementById("resumoDias").innerText = `Dias desde o último reset: ${calcularDias()}`;
-        }
-
-        atualizarResumo();
-
-        function cadastrarAtividade() {
-            const distancia = parseFloat(document.getElementById("distancia").value);
-            const tempo = parseInt(document.getElementById("tempo").value);
-            const calorias = parseFloat(document.getElementById("calorias").value);
-
-            if (isNaN(distancia) || isNaN(tempo) || isNaN(calorias) || distancia <= 0 || tempo <= 0 || calorias <= 0) {
-                alert("Por favor, preencha todos os campos corretamente!");
-                return;
-            }
-
-            distanciaTotal += distancia;
-            tempoTotal += tempo;
-            caloriasTotal += calorias;
-
-            localStorage.setItem("distanciaTotal", distanciaTotal);
-            localStorage.setItem("tempoTotal", tempoTotal);
-            localStorage.setItem("caloriasTotal", caloriasTotal);
-
-            atualizarResumo();
-            document.getElementById("formAtividade").reset();
-            alert("Atividade cadastrada com sucesso!");
-        }
-        let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredPrompt = event;
-    document.getElementById('installButton').style.display = 'block';
-});
-
-function installApp() {
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choice) => {
-            if (choice.outcome === 'accepted') {
-                console.log('Usuário aceitou instalar o PWA');
-            } else {
-                console.log('Usuário recusou instalar o PWA');
-            }
-            deferredPrompt = null;
-        });
-    }
-}
-
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
