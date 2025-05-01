@@ -47,6 +47,8 @@
         form button:hover {
             background-color: #2E7D32;
         }
+        <button id="installButton" style="display: none;" onclick="installApp()">Instalar Aplicativo</button>
+
     </style>
 </head>
 <body>
@@ -135,6 +137,28 @@
             document.getElementById("formAtividade").reset();
             alert("Atividade cadastrada com sucesso!");
         }
+        let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    document.getElementById('installButton').style.display = 'block';
+});
+
+function installApp() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choice) => {
+            if (choice.outcome === 'accepted') {
+                console.log('Usuário aceitou instalar o PWA');
+            } else {
+                console.log('Usuário recusou instalar o PWA');
+            }
+            deferredPrompt = null;
+        });
+    }
+}
+
     </script>
 </body>
 </html>
