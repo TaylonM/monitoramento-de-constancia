@@ -6,6 +6,13 @@
     <title>Monitor de Progresso</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+            .then(() => console.log("Service Worker registrado!"))
+            .catch((error) => console.log("Erro no Service Worker:", error));
+        }
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -172,4 +179,5 @@
     </script>
 </body>
 </html>
+
 
